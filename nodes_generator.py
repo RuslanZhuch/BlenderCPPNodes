@@ -1,12 +1,11 @@
 import bpy
 import json
+import os
 
 from bpy.types import NodeTree, Node, NodeSocket, NodeCustomGroup, StringProperty
 
-class ScriptingTree(NodeTree):
-    bl_idname = 'ScriptingTreeType'
-    bl_label = "Scripting"
-    bl_icon = 'NODETREE'
+import nodeitems_utils
+from nodeitems_utils import NodeCategory, NodeItem
 
 class ScriptingTreeNodeBase(Node):
     @classmethod
@@ -24,18 +23,6 @@ class ScriptingTreeNodeBase(Node):
 
     def add_output_node(self, output_type, name):
         self.outputs.new(output_type, name)
-
-class AddMathNode(ScriptingTreeNodeBase, Node):
-    bl_idname = 'AddNodeB'
-    bl_label = "AddB"
-
-    def init(self, context):
-        self.inputs.new('NodeSocketInt', "Left")
-        self.inputs.new('NodeSocketFloat', "Right")
-        self.outputs.new('NodeSocketFloat', "Result")
-
-import nodeitems_utils
-from nodeitems_utils import NodeCategory, NodeItem
 
 class ScriptCategyryBase(NodeCategory):
     @classmethod
@@ -60,11 +47,20 @@ class NodesFactory():
         self._nodes = []
         self._node_categories = {}
         self._node_categories_names = {}
+        self.blocks_config = None
 
-        self.blocks_config_path = "D:\Projects\cppParser\output.json"
-        self.blocks_config = json.load(open(self.blocks_config_path))
-        
+    def try_get_src_file(self):
+        try:
+            self.blocks_config_path = bpy.context.scene.cppgen.src_path + "output.json"
+            file = open(self.blocks_config_path)
+            self.blocks_config = json.load(file)
+            return True
+        except:
+            return False
+
     def register_nodes(self):
+        if not self.try_get_src_file():
+            return
 
         if self.blocks_config is None:
             return
@@ -85,9 +81,7 @@ class NodesFactory():
             self._node_categories_names[category_id] = category_name
 
             def add_node(arguments, return_data, node_id, node_name):
-                print("arguments outer", arguments)
                 def init(self, context):
-                    print("arguments inner", arguments)
                     for argument in arguments:
                         input_data = argument["type"]
                         input_type = input_data["name"]
@@ -101,7 +95,6 @@ class NodesFactory():
                     
                     "init": init
                 })
-                print("class type", type(node_class))
 
                 return node_class
 
@@ -123,7 +116,6 @@ class NodesFactory():
 
         categories = []
         for category_id, category in self._node_categories.items():
-            print("append", category_id, category)
             categories.append(
                 ScriptCategyryBase(category_id, self._node_categories_names[category_id], items = category)
             )
@@ -132,26 +124,17 @@ class NodesFactory():
 
 
     def unregister_all(self):
-        nodeitems_utils.unregister_node_categories('CUSTOM_NODES')
+        try:
+            nodeitems_utils.unregister_node_categories('CUSTOM_NODES')
+        except Exception as e:
+            print("Failed to unregister nodes", e)
+            pass
 
         for n in reversed(self._nodes):
             bpy.utils.unregister_class(n)
 
+        self._nodes.clear()
+        self._node_categories.clear()
+        self._node_categories_names.clear()
+
 nodes_factory = NodesFactory()
-
-_classes = (
-    ScriptingTree, 
-)
-
-def register():
-    for cls in _classes:
-        bpy.utils.register_class(cls)
-
-    nodes_factory.register_all()
-
-def unregister():
-
-    nodes_factory.unregister_all()
-
-    for cls in reversed(_classes):
-        bpy.utils.unregister_class(cls)

@@ -1,5 +1,5 @@
 bl_info = {
-    "name": "cppScripts",
+    "name": "cppGen",
     "blender": (3, 4, 1),
     "category": "Rising",
 }
@@ -9,14 +9,15 @@ import bpy
 import os
 import sys
 
-from . import nodes, node_sockets, nodes_group
+from . import nodes_tree, node_sockets, nodes_generator, gui
 
 print("reloaded")
 
 _modules = (
-    nodes_group,
     node_sockets,
-    nodes,
+    nodes_tree,
+    nodes_generator,
+    gui,
 )
 
 def register():
