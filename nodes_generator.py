@@ -1,6 +1,7 @@
 import bpy
 import json
 import os
+from pathlib import Path
 
 from bpy.types import NodeTree, Node, NodeSocket, NodeCustomGroup, StringProperty
 
@@ -47,28 +48,26 @@ class NodesFactory():
         self._nodes = []
         self._node_categories = {}
         self._node_categories_names = {}
-        self.blocks_config = None
+        self._block_configs = []
 
-    def try_get_src_file(self):
-        try:
-            self.blocks_config_path = bpy.context.scene.cppgen.src_path + "output.json"
-            file = open(self.blocks_config_path)
-            self.blocks_config = json.load(file)
-            return True
-        except:
-            return False
+    def fetch_configs(self):
+        self._block_configs.clear()
 
-    def register_nodes(self):
-        if not self.try_get_src_file():
-            return
+        pathlist = Path(bpy.context.scene.cppgen.src_path).rglob('*.json')
+        for path in pathlist:
+            path_in_str = str(path)
+            try:
+                file = open(path_in_str)
+                self._block_configs.append(json.load(file))
+            except:
+                print("Failed to load config from file", path_in_str)
 
-        if self.blocks_config is None:
-            return
+    def parse_config(self, block_config):
 
-        if len(self.blocks_config) == 0:
+        if len(block_config) == 0:
             return
         
-        blocks_namespace = self.blocks_config[0]
+        blocks_namespace = block_config[0]
         if blocks_namespace["name"] != "Blocks":
             return
         
@@ -107,6 +106,12 @@ class NodesFactory():
 
                 self._nodes.append(add_node(arguments, return_data, node_id, node_name))
                 self._node_categories[category_id].append(NodeItem(node_id))
+
+    def register_nodes(self):
+        self.fetch_configs()
+
+        for block_config in self._block_configs:
+            self.parse_config(block_config)
 
     def register_all(self):
         self.register_nodes()
