@@ -6,7 +6,7 @@ from . import nodes_generator
 
 directory_subtype = 'DIR_PATH' if bpy.app.version != (3,1,0) else 'NONE' # https://developer.blender.org/T96691
 class CommonProps(PropertyGroup):
-    src_path : StringProperty(name="source path", description="root folder with source code", subtype=directory_subtype)
+    src_path : StringProperty(name="source path", description="root folder with header-parser.exe", subtype=directory_subtype)
 
 class CPPGEN_PT_ScriptingPanel(bpy.types.Panel):
     bl_label = "Scripting panel"

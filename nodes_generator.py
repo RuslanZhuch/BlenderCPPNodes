@@ -53,7 +53,7 @@ class NodesFactory():
     def fetch_configs(self):
         self._block_configs.clear()
 
-        pathlist = Path(bpy.context.scene.cppgen.src_path).rglob('*.json')
+        pathlist = Path(bpy.context.scene.cppgen.src_path + "nodes-structures").rglob('*.json')
         for path in pathlist:
             path_in_str = str(path)
             try:
