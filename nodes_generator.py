@@ -88,7 +88,7 @@ class NodesFactory():
                     return_type = return_data["name"]
                     self.outputs.new(TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
 
-                node_class = type("ScriptingTreeNode" + "Math" + "AddNode", (ScriptingTreeNodeBase, Node, ), {
+                node_class = type("ScriptingTreeNode" + node_id, (ScriptingTreeNodeBase, Node, ), {
                     "bl_idname": node_id,
                     "bl_label": node_name,
                     
