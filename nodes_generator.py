@@ -1,6 +1,7 @@
 import bpy
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from bpy.types import NodeTree, Node, NodeSocket, NodeCustomGroup, StringProperty
@@ -67,47 +68,56 @@ class NodesFactory():
         if len(block_config) == 0:
             return
         
-        blocks_namespace = block_config[0]
-        if blocks_namespace["name"] != "Blocks":
-            return
-        
-        for block_category in blocks_namespace["members"]:
-            category_name = block_category["name"]
-            category_id = str.upper(category_name) + "NODES"
+        for block in block_config:
+            if block["type"] != "namespace":
+                continue
+            blocks_namespace = block
 
-            if self._node_categories.get(category_id) is None:
-                self._node_categories[category_id] = []
-            self._node_categories_names[category_id] = category_name
+            if blocks_namespace["name"] != "Blocks":
+                continue
+            
+            for block_category in blocks_namespace["members"]:
+                category_name = block_category["name"]
+                category_id = str.upper(category_name) + "NODES"
 
-            def add_node(arguments, return_data, node_id, node_name):
-                def init(self, context):
-                    for argument in arguments:
-                        input_data = argument["type"]
-                        input_type = input_data["name"]
-                        self.inputs.new(TypesMapper.type_to_socket(input_type), argument["name"] + "(" + input_type + ")")
-                    return_type = return_data["name"]
-                    self.outputs.new(TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
+                if self._node_categories.get(category_id) is None:
+                    self._node_categories[category_id] = []
+                self._node_categories_names[category_id] = category_name
 
-                node_class = type("ScriptingTreeNode" + node_id, (ScriptingTreeNodeBase, Node, ), {
-                    "bl_idname": node_id,
-                    "bl_label": node_name,
-                    
-                    "init": init
-                })
+                def add_node(arguments, return_data, node_id, node_name):
+                    def init(self, context):
+                        for argument in arguments:
+                            input_data = argument["type"]
+                            input_type = input_data["name"]
+                            self.inputs.new(TypesMapper.type_to_socket(input_type), argument["name"] + "(" + input_type + ")")
+                        return_type = return_data["name"]
+                        self.outputs.new(TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
 
-                return node_class
+                    node_class = type("ScriptingTreeNode" + node_id, (ScriptingTreeNodeBase, Node, ), {
+                        "bl_idname": node_id,
+                        "bl_label": node_name,
+                        
+                        "init": init
+                    })
 
-            for node_data in block_category["members"]:
-                node_name = node_data["name"]
-                node_id = str.upper(node_name) + "NODE"
+                    return node_class
 
-                return_data = node_data["returnType"]
-                arguments = node_data["arguments"]
+                for node_data in block_category["members"]:
+                    node_name = node_data["name"]
+                    node_id = str.upper(node_name) + "NODE"
 
-                self._nodes.append(add_node(arguments, return_data, node_id, node_name))
-                self._node_categories[category_id].append(NodeItem(node_id))
+                    return_data = node_data["returnType"]
+                    arguments = node_data["arguments"]
+
+                    self._nodes.append(add_node(arguments, return_data, node_id, node_name))
+                    self._node_categories[category_id].append(NodeItem(node_id))
 
     def register_nodes(self):
+        parser_path = bpy.context.scene.cppgen.src_path + "header-parser.exe"
+        parsed = subprocess.run([parser_path, 
+                        "sources", "-c", "TCLASS", "-f", "TFUNC", "-o", "nodes-structures"])
+        print(parsed)
+
         self.fetch_configs()
 
         for block_config in self._block_configs:
