@@ -24,7 +24,10 @@ class ScriptingNodeAutoSocketWeakName(NodeSocket):
             return
 
         link = self.links[0]
-        layout.label(text=link.to_socket.name)
+        if self.is_output:
+            layout.label(text=link.to_socket.name)
+        else:
+            layout.label(text=link.from_socket.name)
 
     def draw_color(self, context, node):
         return (0.69, 0.14, 0.43, 0.8)

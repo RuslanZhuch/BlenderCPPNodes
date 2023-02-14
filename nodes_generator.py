@@ -96,6 +96,7 @@ class NodesFactory():
             self.parse_config(block_config)
 
         self._nodes.append(basic_nodes.InputScriptingNode)
+        self._nodes.append(basic_nodes.OutputScriptingNode)
 
     def register_all(self):
         self.register_nodes()
@@ -112,7 +113,8 @@ class NodesFactory():
             )
         categories.append(
             ScriptCategyryBase("ioNODES", "IO", items = [
-                NodeItem("InputScriptingNode")
+                NodeItem("InputScriptingNode"),
+                NodeItem("OutputScriptingNode"),
             ])
         )
 

@@ -19,43 +19,40 @@ class ScriptingTreeNodeBase(Node):
     def poll(cls, ntree):
         return ntree.bl_idname == 'ScriptingTreeType'
 
-    def set_id(self, node_id):
-        self.bl_idname = node_id
+def update_sockets(sockets):
+        sockets_linked = sum([socket.is_linked for socket in sockets])
 
-    def set_name(self, node_name):
-        self.bl_label = node_name
-
-    def add_input_node(self, input_type, name):
-        self.inputs.new(input_type, name)
-
-    def add_output_node(self, output_type, name):
-        self.outputs.new(output_type, name)
+        linked_sockets_diff = len(sockets) - sockets_linked 
+        if linked_sockets_diff == 0:
+            sockets.new("AUTO_SCRIPTING_SOKET_WEAK", "Value")
+        elif linked_sockets_diff >= 2:
+            last_socket_id = 0
+            while linked_sockets_diff > 1:
+                while True:
+                    if sockets[last_socket_id].is_linked:
+                        last_socket_id -= 1
+                        continue
+                    sockets.remove(sockets[last_socket_id])
+                    linked_sockets_diff -= 1
+                    break
 
 class InputScriptingNode(ScriptingTreeNodeBase):
     bl_idname = "InputScriptingNode"
     bl_label = "Input"
-    num_of_links = 0
 
     def init(self, context):
-        self.outputs.new("AUTO_SCRIPTING_SOKET", "Output 1")
+        self.outputs.new("AUTO_SCRIPTING_SOKET_WEAK", "Value")
         
     def update(self):
-        
-        sockets_linked = sum([socket.is_linked for socket in self.outputs])
+        update_sockets(self.outputs)
 
-        print("sockets_linked", sockets_linked, self)
-        linked_sockets_diff = len(self.outputs) - sockets_linked 
-        if linked_sockets_diff == 0:
-            print("Need to add socket", self)
-            self.outputs.new("AUTO_SCRIPTING_SOKET_WEAK", "Output")
-        elif linked_sockets_diff >= 2:
-            print("Need to remove socket", self)
-            last_socket_id = 0
-            while linked_sockets_diff > 1:
-                while True:
-                    if self.outputs[last_socket_id].is_linked:
-                        last_socket_id -= 1
-                        continue
-                    self.outputs.remove(self.outputs[last_socket_id])
-                    linked_sockets_diff -= 1
-                    break
+
+class OutputScriptingNode(ScriptingTreeNodeBase):
+    bl_idname = "OutputScriptingNode"
+    bl_label = "Output"
+
+    def init(self, context):
+        self.inputs.new("AUTO_SCRIPTING_SOKET_WEAK", "Value")
+        
+    def update(self):
+        update_sockets(self.inputs)
