@@ -11,13 +11,27 @@ class ScriptingNodeAutoSocket(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text)
 
-    # Socket color
     def draw_color(self, context, node):
         return (0.69, 0.14, 0.43, 0.8)
 
+class ScriptingNodeAutoSocketWeakName(NodeSocket):
+    bl_idname = 'AUTO_SCRIPTING_SOKET_WEAK'
+    bl_label = "auto"
+
+    def draw(self, context, layout, node, text):
+        if len(self.links) == 0:
+            layout.label(text=text)
+            return
+
+        link = self.links[0]
+        layout.label(text=link.to_socket.name)
+
+    def draw_color(self, context, node):
+        return (0.69, 0.14, 0.43, 0.8)
 
 _classes = (
     ScriptingNodeAutoSocket, 
+    ScriptingNodeAutoSocketWeakName,
 )
 
 def register():

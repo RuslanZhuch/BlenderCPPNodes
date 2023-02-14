@@ -4,45 +4,17 @@ import os
 import subprocess
 from pathlib import Path
 
+from . import basic_nodes
+
 from bpy.types import NodeTree, Node, NodeSocket, NodeCustomGroup, StringProperty
 
 import nodeitems_utils
 from nodeitems_utils import NodeCategory, NodeItem
 
-class ScriptingTreeNodeBase(Node):
-    @classmethod
-    def poll(cls, ntree):
-        return ntree.bl_idname == 'ScriptingTreeType'
-
-    def set_id(self, node_id):
-        self.bl_idname = node_id
-
-    def set_name(self, node_name):
-        self.bl_label = node_name
-
-    def add_input_node(self, input_type, name):
-        self.inputs.new(input_type, name)
-
-    def add_output_node(self, output_type, name):
-        self.outputs.new(output_type, name)
-
 class ScriptCategyryBase(NodeCategory):
     @classmethod
     def poll(cls, context):
         return context.space_data.tree_type == 'ScriptingTreeType'
-
-class TypesMapper:
-    @staticmethod
-    def type_to_socket(data_type):
-        if data_type == "int":
-            return "NodeSocketInt"
-        elif data_type == "float":
-            return "NodeSocketFloat"
-        elif data_type == "bool":
-            return "NodeSocketBool"
-        elif data_type == "auto":
-            return "AUTO_SCRIPTING_SOKET"
-        return "NodeSocketInt"
 
 class NodesFactory():
     def __init__(self):
@@ -89,11 +61,11 @@ class NodesFactory():
                         for argument in arguments:
                             input_data = argument["type"]
                             input_type = input_data["name"]
-                            self.inputs.new(TypesMapper.type_to_socket(input_type), argument["name"] + "(" + input_type + ")")
+                            self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + "(" + input_type + ")")
                         return_type = return_data["name"]
-                        self.outputs.new(TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
+                        self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
 
-                    node_class = type("ScriptingTreeNode" + node_id, (ScriptingTreeNodeBase, Node, ), {
+                    node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
                         "bl_idname": node_id,
                         "bl_label": node_name,
                         
@@ -123,10 +95,14 @@ class NodesFactory():
         for block_config in self._block_configs:
             self.parse_config(block_config)
 
+        self._nodes.append(basic_nodes.InputScriptingNode)
+
     def register_all(self):
         self.register_nodes()
 
+        print("register all nodes")
         for n in self._nodes:
+            print(n)
             bpy.utils.register_class(n)
 
         categories = []
@@ -134,6 +110,11 @@ class NodesFactory():
             categories.append(
                 ScriptCategyryBase(category_id, self._node_categories_names[category_id], items = category)
             )
+        categories.append(
+            ScriptCategyryBase("ioNODES", "IO", items = [
+                NodeItem("InputScriptingNode")
+            ])
+        )
 
         nodeitems_utils.register_node_categories('CUSTOM_NODES', categories)
 
