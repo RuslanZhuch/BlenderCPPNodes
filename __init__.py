@@ -9,7 +9,7 @@ import bpy
 import os
 import sys
 
-from . import nodes_tree, node_sockets, basic_nodes, nodes_generator, gui
+from . import nodes_tree, node_sockets, basic_nodes, nodes_generator, nodes_parser, gui
 
 print("reloaded")
 
@@ -18,6 +18,7 @@ _modules = (
     nodes_tree,
     basic_nodes,
     nodes_generator,
+    nodes_parser,
     gui,
 )
 

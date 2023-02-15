@@ -3,6 +3,7 @@ from bpy.types import NodeTree, Node, NodeSocket, PropertyGroup
 from bpy.props import StringProperty, BoolProperty, EnumProperty, IntProperty, CollectionProperty, FloatProperty, PointerProperty
 
 from . import nodes_generator
+from . import nodes_parser
 
 directory_subtype = 'DIR_PATH' if bpy.app.version != (3,1,0) else 'NONE' # https://developer.blender.org/T96691
 class CommonProps(PropertyGroup):
@@ -26,6 +27,9 @@ class CPPGEN_PT_ScriptingPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(scene.cppgen, "src_path")
 
+        row = layout.row()
+        row.operator("node.cppgen_parse_nodes")
+
 class CPPGEN_OT_GenerateNodes(bpy.types.Operator):
     bl_label = "Generate nodes"
     bl_idname = "node.cppgen_generate_nodes"
@@ -37,9 +41,20 @@ class CPPGEN_OT_GenerateNodes(bpy.types.Operator):
 
         return {'FINISHED'}
 
+class CPPGEN_OT_ParseNodes(bpy.types.Operator):
+    bl_label = "Parse nodes"
+    bl_idname = "node.cppgen_parse_nodes"
+
+    def execute(self, context):
+        print("--------------- BEGIN PARSING ---------------")
+        nodes_parser.traverse_nodes(bpy.data.node_groups[0])
+        print("--------------- PARSING COMPLETE ---------------")
+        return {'FINISHED'}
+
 _classes = (
     CPPGEN_OT_GenerateNodes,
     CPPGEN_PT_ScriptingPanel,
+    CPPGEN_OT_ParseNodes,
     CommonProps,
 )
 
