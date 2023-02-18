@@ -1,0 +1,61 @@
+{
+    "version": 1,
+    "data": [
+        {
+            "id": "OutputScriptingNode",
+            "name": "Output",
+            "inputs": [
+                {
+                    "target_node_id": "ANDNODE",
+                    "target_node_name": "and",
+                    "target_socket_id": 0
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 2
+            },
+            "outputsSchema": {
+                "names": []
+            }
+        },
+        {
+            "id": "ANDNODE",
+            "name": "and",
+            "inputs": [
+                {
+                    "target_node_id": "InputScriptingNode",
+                    "target_node_name": "Input",
+                    "target_socket_id": 0
+                },
+                {
+                    "target_node_id": "InputScriptingNode",
+                    "target_node_name": "Input",
+                    "target_socket_id": 1
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 2
+            },
+            "outputsSchema": {
+                "names": [
+                    "Result"
+                ]
+            }
+        },
+        {
+            "id": "InputScriptingNode",
+            "name": "Input",
+            "inputs": [],
+            "inputsSchema": {
+                "numOfInputs": 0
+            },
+            "outputsSchema": {
+                "names": [
+                    "Value",
+                    "Value",
+                    "Value"
+                ]
+            }
+        }
+    ]
+}
