@@ -61,7 +61,7 @@ class NodesFactory():
                         for argument in arguments:
                             input_data = argument["type"]
                             input_type = input_data["name"]
-                            self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + "(" + input_type + ")")
+                            self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + " (" + input_type + ")")
                         return_type = return_data["name"]
                         self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
 

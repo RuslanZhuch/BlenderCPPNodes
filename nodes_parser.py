@@ -10,17 +10,40 @@ def find_output_node(nodes):
 
     return None
 
-def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
+def traverse_node(node, nodes_to_traverse_next, nodes_cache):
     inputs = node.inputs
     print("Node {} has inputs {}".format(node, inputs))
+
+    node_inputs_data, node_outputs_data = gather_node_schema(node)
 
     node_data = {
         "id": node.bl_idname,
         "name": node.name,
-        "inputs": []
+        "inputs": traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache),
+        "inputsSchema": node_inputs_data, 
+        "outputssSchema": node_outputs_data, 
     }
 
-    for node_input in inputs:
+    return node_data
+
+def gather_node_schema(node):
+    def gather_output_names(node):
+        return [output.name.split(' ')[0] for output in node.outputs]     
+    
+    node_outputs_data = {
+        "names": gather_output_names(node)
+    }
+
+    node_inputs_data = {
+        "numOfInputs": len(node.inputs)
+    }
+
+    return node_inputs_data, node_outputs_data
+
+def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
+    node_inputs_data = []
+
+    for node_input in node.inputs:
         print("Process inputs:", node_input)
         print("Is linked", node_input.is_linked)
         if not node_input.is_linked:
@@ -49,7 +72,7 @@ def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
 
         print("From socket if", from_output_index)
 
-        node_data["inputs"].append({
+        node_inputs_data.append({
             "target_node_id": from_node.bl_idname,
             "target_node_name": from_node.name,
             "target_socket_id": from_output_index
@@ -63,7 +86,7 @@ def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
             nodes_to_traverse_next.put(from_node)
             print("Added node {} to list".format(from_node))
 
-    return node_data
+    return node_inputs_data
     
 def traverse_nodes(node_group):
     nodes = node_group.nodes
@@ -86,7 +109,7 @@ def traverse_nodes(node_group):
         node_to_traverse = nodes_to_traverse_next.get_nowait()
         print("Node to traverse:", node_to_traverse)
 
-        json_data["data"].append(traverse_node_inputs(node_to_traverse, nodes_to_traverse_next, nodes_cache))
+        json_data["data"].append(traverse_node(node_to_traverse, nodes_to_traverse_next, nodes_cache))
 
         output_path = bpy.context.scene.cppgen.src_path + "temp\\parsed_nodes.json"
         with open(output_path, 'w', encoding='utf-8') as f:
