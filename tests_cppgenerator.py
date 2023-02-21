@@ -65,5 +65,27 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(generated, "const decltype(auto) notResult{ not(arg1) };")
         schema_file.close()
 
+    def test_gen_output_list_schema1(self):
+        schema_file = open("tests\\resources\\nodes_1_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate_output_list(schema)
+        self.assertEqual(generated, ["notResult"])
+        schema_file.close()
+
+    def test_gen_output_list_schema2(self):
+        schema_file = open("tests\\resources\\nodes_2_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate_output_list(schema)
+        self.assertEqual(generated, ["andResult", "orResult"])
+        schema_file.close()
+
+    def test_gen_return(self):
+        generated1 = cpp_generator.generate_return_from_list(["notResult"])
+        self.assertEqual(generated1, "return { notResult };")
+
+        generated2 = cpp_generator.generate_return_from_list(["andResult", "orResult"])
+        self.assertEqual(generated2, "return { andResult, orResult };")
+
+
 if __name__ == '__main__':
     unittest.main()

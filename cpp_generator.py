@@ -52,3 +52,22 @@ def generate_function_call(function_schema):
             generate_call_args(function_schema)
         )
     )
+
+def generate_output_list(schema):
+    node = gather_node_data(schema, "Output")
+    inputs = node["inputs"]
+
+    inputs_list = []
+    for input_data in inputs:
+        inputs_list.append(input_data["target_node_name"] + "Result")
+    
+    return inputs_list
+
+def generate_return_from_list(inputs_list):
+    output_names = ""
+    for input_name in inputs_list:
+        if input_name != inputs_list[0]:
+            output_names += ", "
+        output_names += input_name
+
+    return "return {{ {} }};".format(output_names)

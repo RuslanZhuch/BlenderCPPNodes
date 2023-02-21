@@ -9,10 +9,15 @@
                     "target_node_id": "ANDNODE",
                     "target_node_name": "and",
                     "target_socket_id": 0
+                },
+                {
+                    "target_node_id": "ORNODE",
+                    "target_node_name": "or",
+                    "target_socket_id": 0
                 }
             ],
             "inputsSchema": {
-                "numOfInputs": 2
+                "numOfInputs": 3
             },
             "outputsSchema": {
                 "names": []
