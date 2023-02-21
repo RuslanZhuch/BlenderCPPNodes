@@ -86,6 +86,40 @@ class TestCppGenerator(unittest.TestCase):
         generated2 = cpp_generator.generate_return_from_list(["andResult", "orResult"])
         self.assertEqual(generated2, "return { andResult, orResult };")
 
+    def test_gen_tabulation(self):
+        self.assertEqual(cpp_generator.tabulate("some string", 0), "some string")
+        self.assertEqual(cpp_generator.tabulate("some string"), "    some string")
+        self.assertEqual(cpp_generator.tabulate("some string", 1), "    some string")
+        self.assertEqual(cpp_generator.tabulate("some string", 2), "        some string")
+        self.assertEqual(cpp_generator.tabulate("some string", 3), "            some string")
+
+    def test_gen_scope(self):
+        ctx = cpp_generator.Context()
+
+        self.assertEqual(cpp_generator.put_line("Line 1", ctx), "Line 1")
+        self.assertEqual(cpp_generator.put_line("Line 2", ctx), "Line 2") 
+        self.assertEqual(cpp_generator.push_scope(ctx), "{")
+        self.assertEqual(cpp_generator.put_line("Line 3", ctx), "    Line 3") 
+        self.assertEqual(cpp_generator.put_line("Line 4", ctx), "    Line 4") 
+        self.assertEqual(cpp_generator.pull_scope(ctx), "}")
+        self.assertEqual(cpp_generator.put_line("Line 5", ctx), "Line 5")
+        self.assertEqual(cpp_generator.put_line("Line 6", ctx), "Line 6") 
+
+    def test_gen_scope_nested(self):
+        ctx = cpp_generator.Context()
+        self.assertEqual(cpp_generator.push_scope(ctx), "{")
+        self.assertEqual(cpp_generator.put_line("Line 1", ctx), "    Line 1") 
+        self.assertEqual(cpp_generator.push_scope(ctx), "    {")
+        self.assertEqual(cpp_generator.put_line("Line 2", ctx), "        Line 2") 
+        self.assertEqual(cpp_generator.push_scope(ctx), "        {")
+        self.assertEqual(cpp_generator.put_line("Line 3", ctx), "            Line 3") 
+        self.assertEqual(cpp_generator.pull_scope(ctx), "        }")
+        self.assertEqual(cpp_generator.put_line("Line 4", ctx), "        Line 4") 
+        self.assertEqual(cpp_generator.pull_scope(ctx), "    }")
+        self.assertEqual(cpp_generator.put_line("Line 5", ctx), "    Line 5") 
+        self.assertEqual(cpp_generator.pull_scope(ctx), "}")
+        self.assertEqual(cpp_generator.put_line("Line 6", ctx), "Line 6") 
+
 
 if __name__ == '__main__':
     unittest.main()

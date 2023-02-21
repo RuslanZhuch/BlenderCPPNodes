@@ -1,5 +1,9 @@
 import json
 
+class Context:
+    def __init__(self):
+        self.tab_level = 0
+
 
 def gather_node_data(schema, node_name):
     data = schema["data"]
@@ -71,3 +75,21 @@ def generate_return_from_list(inputs_list):
         output_names += input_name
 
     return "return {{ {} }};".format(output_names)
+
+def tabulate(input_string, level = 1):
+    tabs_str = ""
+    for _ in range(0, level):
+        tabs_str += "    "
+    return "{}{}".format(tabs_str, input_string)
+
+def put_line(line, context):
+    return tabulate(line, context.tab_level)
+
+def push_scope(context):
+    output_str = tabulate("{", context.tab_level)
+    context.tab_level += 1
+    return output_str
+
+def pull_scope(context):
+    context.tab_level -= 1
+    return tabulate("}", context.tab_level)
