@@ -83,13 +83,31 @@ def tabulate(input_string, level = 1):
     return "{}{}".format(tabs_str, input_string)
 
 def put_line(line, context):
-    return tabulate(line, context.tab_level)
+    return "{}\n".format(tabulate(line, context.tab_level))
 
 def push_scope(context):
-    output_str = tabulate("{", context.tab_level)
+    output_str = tabulate("{\n", context.tab_level)
     context.tab_level += 1
     return output_str
 
 def pull_scope(context):
     context.tab_level -= 1
-    return tabulate("}", context.tab_level)
+    return tabulate("}\n", context.tab_level)
+
+def generate(schema):
+    context = Context()
+
+    file_data = put_line(generate_signature(schema), context)
+    file_data += push_scope(context)
+
+    schema_data = schema["data"]
+    for node_data in schema_data:
+        node_name = node_data["name"]
+        if node_name != "Output" and node_name != "Input":
+            call_str = generate_function_call(node_data)
+            file_data += put_line(call_str, context)
+
+    file_data += put_line(generate_return_from_list(generate_output_list(schema)), context)
+
+    file_data += pull_scope(context)
+    return file_data
