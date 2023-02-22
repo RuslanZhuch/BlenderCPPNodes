@@ -39,6 +39,8 @@ def generate_call_args(function_schema):
     for input_data in inputs:
         if input_data["target_node_name"] == "Input":
             args.append("arg{}".format(input_data["target_socket_id"] + 1))
+        else:
+            args.append("{}Result".format(input_data["target_node_name"]))
     
     args_string = ""
     for arg in args:
@@ -101,7 +103,7 @@ def generate(schema):
     file_data += push_scope(context)
 
     schema_data = schema["data"]
-    for node_data in schema_data:
+    for node_data in reversed(schema_data):
         node_name = node_data["name"]
         if node_name != "Output" and node_name != "Input":
             call_str = generate_function_call(node_data)

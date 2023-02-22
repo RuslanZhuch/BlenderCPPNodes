@@ -57,6 +57,14 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(generated, "arg1, arg2")
         schema_file.close()
 
+    def test_gen_args_for_schema3_and(self):
+        schema_file = open("tests\\resources\\nodes_3_schema.json")
+        schema = json.load(schema_file)
+        function_schema = cpp_generator.gather_node_data(schema, "and")
+        generated = cpp_generator.generate_call_args(function_schema)
+        self.assertEqual(generated, "notResult, arg1")
+        schema_file.close()
+
     def test_gen_schema1_not_function_call(self):
         schema_file = open("tests\\resources\\nodes_1_schema.json")
         schema = json.load(schema_file)
@@ -126,6 +134,24 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
         expected_file = open("tests\\resources\\nodes_1_generated.cpp", 'r')
+        self.assertEqual(generated, expected_file.read())
+        expected_file.close()
+        schema_file.close()
+        
+    def test_gen_schema3(self):
+        schema_file = open("tests\\resources\\nodes_3_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate(schema)
+        expected_file = open("tests\\resources\\nodes_3_generated.cpp", 'r')
+        self.assertEqual(generated, expected_file.read())
+        expected_file.close()
+        schema_file.close()
+        
+    def test_gen_schema4(self):
+        schema_file = open("tests\\resources\\nodes_4_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate(schema)
+        expected_file = open("tests\\resources\\nodes_4_generated.cpp", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()

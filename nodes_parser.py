@@ -21,7 +21,7 @@ def traverse_node(node, nodes_to_traverse_next, nodes_cache):
         "name": node.name,
         "inputs": traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache),
         "inputsSchema": node_inputs_data, 
-        "outputssSchema": node_outputs_data, 
+        "outputsSchema": node_outputs_data, 
     }
 
     return node_data
