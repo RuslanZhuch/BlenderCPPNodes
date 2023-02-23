@@ -35,6 +35,79 @@ class NodesFactory():
             except:
                 print("Failed to load config from file", path_in_str)
 
+    def parse_blocks(self, blocks_namespace):
+        for block_category in blocks_namespace["members"]:
+            category_name = block_category["name"]
+            category_id = str.upper(category_name) + "NODES"
+
+            if self._node_categories.get(category_id) is None:
+                self._node_categories[category_id] = []
+            self._node_categories_names[category_id] = category_name
+
+            def add_node(arguments, return_data, node_id, node_name):
+                def init(self, context):
+                    for argument in arguments:
+                        input_data = argument["type"]
+                        input_type = input_data["name"]
+                        self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + " (" + input_type + ")")
+                    return_type = return_data["name"]
+                    self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
+
+                node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
+                    "bl_idname": node_id,
+                    "bl_label": node_name,
+                    
+                    "init": init
+                })
+
+                return node_class
+
+            for node_data in block_category["members"]:
+                node_name = node_data["name"]
+                node_id = str.upper(node_name) + "NODE"
+
+                return_data = node_data["returnType"]
+                arguments = node_data["arguments"]
+
+                self._nodes.append(add_node(arguments, return_data, node_id, node_name))
+                self._node_categories[category_id].append(NodeItem(node_id))
+
+
+    def parse_types(self, types_namespace):
+        category_name = "Types"
+        category_id = "TypesNODES"
+        for type_category in types_namespace["members"]:
+            if self._node_categories.get(category_id) is None:
+                self._node_categories[category_id] = []
+            self._node_categories_names[category_id] = category_name
+
+            def add_node(outputs_data, node_id, node_name):
+                def init(self, context):
+                    self.inputs.new(basic_nodes.TypesMapper.type_to_socket("auto"), type_category["name"])
+                    print("Outputs data", outputs_data)
+                    for output_data in outputs_data:
+                        output_name = output_data["name"]
+                        output_type = output_data["dataType"]["name"]
+                        print("Output data {} {}".format(output_name, output_type))
+                        self.outputs.new(basic_nodes.TypesMapper.type_to_socket(output_type), output_name + " (" + output_type + ")")
+
+                node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
+                    "bl_idname": node_id,
+                    "bl_label": node_name,
+                    
+                    "init": init
+                })
+
+                return node_class
+
+            outputs_data = type_category["members"]
+
+            node_name = type_category["name"]
+            node_id = str.upper(node_name) + "NODE"
+
+            self._nodes.append(add_node(outputs_data, node_id, node_name))
+            self._node_categories[category_id].append(NodeItem(node_id))
+
     def parse_config(self, block_config):
 
         if len(block_config) == 0:
@@ -45,49 +118,15 @@ class NodesFactory():
                 continue
             blocks_namespace = block
 
-            if blocks_namespace["name"] != "Blocks":
-                continue
-            
-            for block_category in blocks_namespace["members"]:
-                category_name = block_category["name"]
-                category_id = str.upper(category_name) + "NODES"
-
-                if self._node_categories.get(category_id) is None:
-                    self._node_categories[category_id] = []
-                self._node_categories_names[category_id] = category_name
-
-                def add_node(arguments, return_data, node_id, node_name):
-                    def init(self, context):
-                        for argument in arguments:
-                            input_data = argument["type"]
-                            input_type = input_data["name"]
-                            self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + " (" + input_type + ")")
-                        return_type = return_data["name"]
-                        self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
-
-                    node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
-                        "bl_idname": node_id,
-                        "bl_label": node_name,
-                        
-                        "init": init
-                    })
-
-                    return node_class
-
-                for node_data in block_category["members"]:
-                    node_name = node_data["name"]
-                    node_id = str.upper(node_name) + "NODE"
-
-                    return_data = node_data["returnType"]
-                    arguments = node_data["arguments"]
-
-                    self._nodes.append(add_node(arguments, return_data, node_id, node_name))
-                    self._node_categories[category_id].append(NodeItem(node_id))
+            if blocks_namespace["name"] == "Blocks":
+                self.parse_blocks(blocks_namespace)
+            elif blocks_namespace["name"] == "Types":
+                self.parse_types(blocks_namespace)
 
     def register_nodes(self):
         parser_path = bpy.context.scene.cppgen.src_path + "header-parser.exe"
         parsed = subprocess.run([parser_path, 
-                        "sources", "-c", "TCLASS", "-f", "TFUNC", "-o", "nodes-structures"])
+                        "sources", "-c", "TCLASS", "-f", "TFUNC", "-p", "TPROP", "-o", "nodes-structures"])
         print(parsed)
 
         self.fetch_configs()
