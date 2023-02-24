@@ -51,12 +51,31 @@ def generate_call_args(function_schema):
     return args_string
 
 def generate_function_call(function_schema):
-    return "const decltype(auto) {}Result{{ {} }};".format(
-        function_schema["name"],
-        "{}({})".format(
+    def gen_call_body_str():
+        return "{}({})".format(
             function_schema["name"],
             generate_call_args(function_schema)
         )
+
+    outputs_schema = function_schema["outputsSchema"]
+    output_names = outputs_schema["names"]
+    if len(output_names) == 1:
+        return "const auto {}Result{{ {} }};".format(
+            function_schema["name"],
+            gen_call_body_str()
+        )
+
+    function_name = function_schema["name"]
+    output_full_names = list(map(lambda name: "{}{}".format(function_name, name), output_names))
+    output_full_names_parsed = ""
+    for output_full_name in output_full_names:
+        if output_full_name != output_full_names[0]:
+            output_full_names_parsed += ", "
+        output_full_names_parsed += output_full_name
+
+    return "const auto [ {} ]{{ {} }};".format(
+        output_full_names_parsed,
+        gen_call_body_str()
     )
 
 def generate_output_list(schema):
@@ -65,7 +84,13 @@ def generate_output_list(schema):
 
     inputs_list = []
     for input_data in inputs:
-        inputs_list.append(input_data["target_node_name"] + "Result")
+        source_node_name = input_data["target_node_name"]
+        source_node = gather_node_data(schema, source_node_name)
+        outputsSchema = source_node["outputsSchema"]
+        source_outputs = outputsSchema["names"]
+        source_output_id = input_data["target_socket_id"]
+        
+        inputs_list.append("{}{}".format(source_node_name, source_outputs[source_output_id]))
     
     return inputs_list
 

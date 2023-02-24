@@ -70,7 +70,15 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         function_schema = cpp_generator.gather_node_data(schema, "not")
         generated = cpp_generator.generate_function_call(function_schema)
-        self.assertEqual(generated, "const decltype(auto) notResult{ not(arg1) };")
+        self.assertEqual(generated, "const auto notResult{ not(arg1) };")
+        schema_file.close()
+
+    def test_gen_schema5_Vec2_call(self):
+        schema_file = open("tests\\resources\\nodes_5_schema.json")
+        schema = json.load(schema_file)
+        function_schema = cpp_generator.gather_node_data(schema, "Vec2")
+        generated = cpp_generator.generate_function_call(function_schema)
+        self.assertEqual(generated, "const auto [ Vec2x, Vec2y ]{ Vec2(stretchResult) };")
         schema_file.close()
 
     def test_gen_output_list_schema1(self):
@@ -85,6 +93,13 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         generated = cpp_generator.generate_output_list(schema)
         self.assertEqual(generated, ["andResult", "orResult"])
+        schema_file.close()
+        
+    def test_gen_output_list_schema5(self):
+        schema_file = open("tests\\resources\\nodes_5_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate_output_list(schema)
+        self.assertEqual(generated, ["Vec2x", "Vec2y"])
         schema_file.close()
 
     def test_gen_return(self):
@@ -152,6 +167,15 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
         expected_file = open("tests\\resources\\nodes_4_generated.cpp", 'r')
+        self.assertEqual(generated, expected_file.read())
+        expected_file.close()
+        schema_file.close()
+        
+    def test_gen_schema5(self):
+        schema_file = open("tests\\resources\\nodes_5_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate(schema)
+        expected_file = open("tests\\resources\\nodes_5_generated.cpp", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()

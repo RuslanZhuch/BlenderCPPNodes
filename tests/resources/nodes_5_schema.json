@@ -6,14 +6,14 @@
             "name": "Output",
             "inputs": [
                 {
-                    "target_node_id": "ANDNODE",
-                    "target_node_name": "and",
+                    "target_node_id": "VEC2NODE",
+                    "target_node_name": "Vec2",
                     "target_socket_id": 0
                 },
                 {
-                    "target_node_id": "ORNODE",
-                    "target_node_name": "or",
-                    "target_socket_id": 0
+                    "target_node_id": "VEC2NODE",
+                    "target_node_name": "Vec2",
+                    "target_socket_id": 1
                 }
             ],
             "inputsSchema": {
@@ -24,36 +24,37 @@
             }
         },
         {
-            "id": "ANDNODE",
-            "name": "and",
+            "id": "VEC2NODE",
+            "name": "Vec2",
+            "inputs": [
+                {
+                    "target_node_id": "STRETCHNODE",
+                    "target_node_name": "stretch",
+                    "target_socket_id": 0
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 1
+            },
+            "outputsSchema": {
+                "names": [
+                    "x",
+                    "y"
+                ]
+            }
+        },
+        {
+            "id": "STRETCHNODE",
+            "name": "stretch",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
                     "target_node_name": "Input",
                     "target_socket_id": 0
-                },
-                {
-                    "target_node_id": "InputScriptingNode",
-                    "target_node_name": "Input",
-                    "target_socket_id": 1
                 }
             ],
             "inputsSchema": {
                 "numOfInputs": 2
-            },
-            "outputsSchema": {
-                "names": [
-                    "Result"
-                ]
-            }
-        },
-        {
-            "id": "ANDNODE",
-            "name": "or",
-            "inputs": [
-            ],
-            "inputsSchema": {
-                "numOfInputs": 0
             },
             "outputsSchema": {
                 "names": [
@@ -70,7 +71,6 @@
             },
             "outputsSchema": {
                 "names": [
-                    "Value",
                     "Value",
                     "Value"
                 ]
