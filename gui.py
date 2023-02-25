@@ -5,6 +5,8 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, IntProperty, C
 from . import nodes_generator
 from . import nodes_parser
 
+from bpy.app.handlers import persistent
+
 directory_subtype = 'DIR_PATH' if bpy.app.version != (3,1,0) else 'NONE' # https://developer.blender.org/T96691
 class CommonProps(PropertyGroup):
     src_path : StringProperty(name="source path", description="root folder with header-parser.exe", subtype=directory_subtype)
@@ -34,7 +36,6 @@ class CPPGEN_OT_GenerateNodes(bpy.types.Operator):
     bl_label = "Generate nodes"
     bl_idname = "node.cppgen_generate_nodes"
 
-
     def execute(self, context):
         nodes_generator.nodes_factory.unregister_all()
         nodes_generator.nodes_factory.register_all()
@@ -58,6 +59,11 @@ _classes = (
     CommonProps,
 )
 
+@persistent
+def load_handler(dummy):
+    nodes_generator.nodes_factory.unregister_all()
+    nodes_generator.nodes_factory.register_all()
+
 def register():
     for cls in _classes:
         bpy.utils.register_class(cls)
@@ -66,9 +72,11 @@ def register():
         return PointerProperty(name="settings",type=prop_type)
 
     bpy.types.Scene.cppgen = make_pointer(CommonProps)
+    bpy.app.handlers.load_post.append(load_handler)
 
 def unregister():
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)
         
     del bpy.types.Scene.cppgen
+    bpy.app.handlers.load_post.remove(load_handler)

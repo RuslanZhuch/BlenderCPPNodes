@@ -125,9 +125,14 @@ class NodesFactory():
 
     def register_nodes(self):
         parser_path = bpy.context.scene.cppgen.src_path + "header-parser.exe"
-        parsed = subprocess.run([parser_path, 
-                        "sources", "-c", "TCLASS", "-f", "TFUNC", "-p", "TPROP", "-o", "nodes-structures"])
-        print(parsed)
+
+        try:
+            parsed = subprocess.run([parser_path, 
+                            "sources", "-c", "TCLASS", "-f", "TFUNC", "-p", "TPROP", "-o", "nodes-structures"])
+            print(parsed)
+        except FileNotFoundError:
+            print("(NodesFactory.register_nodes) Failed to run c++ parser: invalid path")
+            return
 
         self.fetch_configs()
 
