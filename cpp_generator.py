@@ -121,10 +121,24 @@ def pull_scope(context):
     context.tab_level -= 1
     return tabulate("}\n", context.tab_level)
 
+def generate_includes(includes_list):
+    context = Context()
+
+    file_data = put_line("#pragma once", context)
+    file_data += put_line("", context)
+
+    for include in includes_list:
+        file_data += put_line("#include \"{}\"".format(include), context)
+
+    return file_data
+
 def generate(schema):
     context = Context()
 
-    file_data = put_line(generate_signature(schema), context)
+    file_data = put_line("#include \"generationIncludes.h\"", context)
+    file_data += put_line("", context)
+
+    file_data += put_line(generate_signature(schema), context)
     file_data += push_scope(context)
 
     schema_data = schema["data"]

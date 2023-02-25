@@ -179,6 +179,18 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
+        
+    def test_gen_includes_content(self):
+        generated = cpp_generator.generate_includes([
+            "include_1.h", 
+            "include_2.h", 
+            "include_3.h", 
+            "include_4.h", 
+            "include_5.h", 
+            ])
+        expected_file = open("tests\\resources\\expected_includes.h", 'r')
+        self.assertEqual(generated, expected_file.read())
+        expected_file.close()
 
 if __name__ == '__main__':
     unittest.main()

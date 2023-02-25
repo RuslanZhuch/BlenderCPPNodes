@@ -22,9 +22,14 @@ class NodesFactory():
         self._node_categories = {}
         self._node_categories_names = {}
         self._block_configs = []
+        self._includes = set()
+
+    def get_includes(self):
+        return self._includes
 
     def fetch_configs(self):
         self._block_configs.clear()
+        self._includes.clear()
 
         pathlist = Path(bpy.context.scene.cppgen.src_path + "nodes-structures").rglob('*.json')
         for path in pathlist:
@@ -108,20 +113,25 @@ class NodesFactory():
             self._nodes.append(add_node(outputs_data, node_id, node_name))
             self._node_categories[category_id].append(NodeItem(node_id))
 
-    def parse_config(self, block_config):
+    def parse_namespace(self, blocks_namespace):
+        if blocks_namespace["name"] == "Blocks":
+            self.parse_blocks(blocks_namespace)
+        elif blocks_namespace["name"] == "Types":
+            self.parse_types(blocks_namespace)
 
+    def parse_include(self, block_include):
+        include_path = block_include["file"]
+        self._includes.add(include_path)
+
+    def parse_config(self, block_config):
         if len(block_config) == 0:
             return
         
         for block in block_config:
-            if block["type"] != "namespace":
-                continue
-            blocks_namespace = block
-
-            if blocks_namespace["name"] == "Blocks":
-                self.parse_blocks(blocks_namespace)
-            elif blocks_namespace["name"] == "Types":
-                self.parse_types(blocks_namespace)
+            if block["type"] == "namespace":
+                self.parse_namespace(block)
+            elif block["type"] == "include":
+                self.parse_include(block)
 
     def register_nodes(self):
         parser_path = bpy.context.scene.cppgen.src_path + "header-parser.exe"
@@ -163,7 +173,6 @@ class NodesFactory():
         )
 
         nodeitems_utils.register_node_categories('CUSTOM_NODES', categories)
-
 
     def unregister_all(self):
         try:

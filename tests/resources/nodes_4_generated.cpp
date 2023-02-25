@@ -1,3 +1,5 @@
+#include "generationIncludes.h"
+
 auto schema_4(auto&& arg1)
 {
     const auto xorResult{ xor(arg1) };
