@@ -39,14 +39,14 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_1_schema.json")
         schema = json.load(schema_file)
         signature = cpp_generator.generate_signature(schema)
-        self.assertEqual(signature, "auto code(auto&& arg1)")
+        self.assertEqual(signature, "auto schema_1(auto&& arg1)")
         schema_file.close()
 
     def test_gen_high_level_signature_2(self):
         schema_file = open("tests\\resources\\nodes_2_schema.json")
         schema = json.load(schema_file)
         signature = cpp_generator.generate_signature(schema)
-        self.assertEqual(signature, "auto code(auto&& arg1, auto&& arg2)")
+        self.assertEqual(signature, "auto schema_2(auto&& arg1, auto&& arg2)")
         schema_file.close()
 
     def test_gen_args_for_schema2_and(self):

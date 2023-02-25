@@ -1,4 +1,4 @@
-auto code(auto&& arg1)
+auto schema_4(auto&& arg1)
 {
     const auto xorResult{ xor(arg1) };
     const auto notResult{ not(xorResult) };

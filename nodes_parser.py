@@ -103,6 +103,7 @@ def traverse_nodes(node_group):
 
     json_data = {
         "version": 1,
+        "name": node_group.name,
         "data":[]
     }
 

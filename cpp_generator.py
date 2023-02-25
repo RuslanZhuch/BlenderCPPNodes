@@ -31,7 +31,7 @@ def generate_signature(schema):
         return args
 
     args = generate_arguments(schema)
-    return "auto code({})".format(args)
+    return "auto {}({})".format(schema["name"], args)
 
 def generate_call_args(function_schema):
     inputs = function_schema["inputs"]

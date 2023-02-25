@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "name": "schema_1",
     "data": [
         {
             "id": "OutputScriptingNode",
