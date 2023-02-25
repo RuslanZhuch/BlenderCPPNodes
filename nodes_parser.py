@@ -89,6 +89,7 @@ def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
     return node_inputs_data
     
 def traverse_nodes(node_group):
+    print("-----------------Parse node group-----------------", node_group.name)
     nodes = node_group.nodes
 
     output_node = find_output_node(nodes)
@@ -111,6 +112,6 @@ def traverse_nodes(node_group):
 
         json_data["data"].append(traverse_node(node_to_traverse, nodes_to_traverse_next, nodes_cache))
 
-        output_path = bpy.context.scene.cppgen.src_path + "temp\\parsed_nodes.json"
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)     
+    output_path = bpy.context.scene.cppgen.src_path + "temp\\{}.json".format(node_group.name)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)     

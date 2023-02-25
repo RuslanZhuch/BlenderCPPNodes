@@ -6,6 +6,7 @@ from . import nodes_generator
 from . import nodes_parser
 
 from bpy.app.handlers import persistent
+from pathlib import Path
 
 directory_subtype = 'DIR_PATH' if bpy.app.version != (3,1,0) else 'NONE' # https://developer.blender.org/T96691
 class CommonProps(PropertyGroup):
@@ -48,7 +49,15 @@ class CPPGEN_OT_ParseNodes(bpy.types.Operator):
 
     def execute(self, context):
         print("--------------- BEGIN PARSING ---------------")
-        nodes_parser.traverse_nodes(bpy.data.node_groups[0])
+        if bpy.context.scene.cppgen.src_path == "":
+            print("(node.cppgen_parse_nodes) Source path is empty")
+            return {'FINISHED'}
+        temp_path = bpy.context.scene.cppgen.src_path + "temp\\"
+        [f.unlink() for f in Path(temp_path).glob("*") if f.is_file()] 
+        for node_group in bpy.data.node_groups:
+            if node_group.bl_idname != "ScriptingTreeType":
+                continue
+            nodes_parser.traverse_nodes(node_group)
         print("--------------- PARSING COMPLETE ---------------")
         return {'FINISHED'}
 
