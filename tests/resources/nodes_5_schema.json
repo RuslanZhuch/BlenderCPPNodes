@@ -5,6 +5,7 @@
         {
             "id": "OutputScriptingNode",
             "name": "Output",
+            "group": "",
             "inputs": [
                 {
                     "target_node_id": "VEC2NODE",
@@ -27,6 +28,7 @@
         {
             "id": "VEC2NODE",
             "name": "Vec2",
+            "group": "Types",
             "inputs": [
                 {
                     "target_node_id": "STRETCHNODE",
@@ -47,6 +49,7 @@
         {
             "id": "STRETCHNODE",
             "name": "stretch",
+            "group": "MultiOutput",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
@@ -67,6 +70,7 @@
             "id": "InputScriptingNode",
             "name": "Input",
             "inputs": [],
+            "group": "",
             "inputsSchema": {
                 "numOfInputs": 0
             },

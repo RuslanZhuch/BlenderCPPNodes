@@ -5,6 +5,7 @@
         {
             "id": "OutputScriptingNode",
             "name": "Output",
+            "group": "",
             "inputs": [
                 {
                     "target_node_id": "ANDNODE",
@@ -27,6 +28,7 @@
         {
             "id": "ANDNODE",
             "name": "and",
+            "group": "Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
@@ -51,6 +53,7 @@
         {
             "id": "ANDNODE",
             "name": "or",
+            "group": "Binary",
             "inputs": [
             ],
             "inputsSchema": {
@@ -65,6 +68,7 @@
         {
             "id": "InputScriptingNode",
             "name": "Input",
+            "group": "",
             "inputs": [],
             "inputsSchema": {
                 "numOfInputs": 0

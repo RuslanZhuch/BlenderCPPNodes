@@ -2,9 +2,9 @@
 
 auto schema_4(auto&& arg1)
 {
-    const auto xorResult{ xor(arg1) };
-    const auto notResult{ not(xorResult) };
-    const auto orResult{ or(arg1) };
-    const auto andResult{ and(notResult, orResult) };
+    const auto xorResult{ Binary::xor(arg1) };
+    const auto notResult{ Binary::not(xorResult) };
+    const auto orResult{ Binary::or(arg1) };
+    const auto andResult{ Binary::and(notResult, orResult) };
     return { andResult, orResult };
 }

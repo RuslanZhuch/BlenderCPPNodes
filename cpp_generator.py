@@ -52,7 +52,8 @@ def generate_call_args(function_schema):
 
 def generate_function_call(function_schema):
     def gen_call_body_str():
-        return "{}({})".format(
+        return "{}::{}({})".format(
+            function_schema["group"],
             function_schema["name"],
             generate_call_args(function_schema)
         )

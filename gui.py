@@ -52,7 +52,7 @@ class CPPGEN_OT_ParseNodes(bpy.types.Operator):
         if bpy.context.scene.cppgen.src_path == "":
             print("(node.cppgen_parse_nodes) Source path is empty")
             return {'FINISHED'}
-        temp_path = bpy.context.scene.cppgen.src_path + "temp\\"
+        temp_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\temp\\"
         [f.unlink() for f in Path(temp_path).glob("*") if f.is_file()] 
         for node_group in bpy.data.node_groups:
             if node_group.bl_idname != "ScriptingTreeType":

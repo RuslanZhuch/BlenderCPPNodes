@@ -10,15 +10,20 @@ def find_output_node(nodes):
 
     return None
 
-def traverse_node(node, nodes_to_traverse_next, nodes_cache):
+def traverse_node(node, nodes_to_traverse_next, nodes_cache, node_groups):
     inputs = node.inputs
     print("Node {} has inputs {}".format(node, inputs))
 
     node_inputs_data, node_outputs_data = gather_node_schema(node)
 
+    node_group = ""
+    if node.name in node_groups:
+        node_group = node_groups[node.name]
+
     node_data = {
         "id": node.bl_idname,
         "name": node.name,
+        "group": node_group,
         "inputs": traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache),
         "inputsSchema": node_inputs_data, 
         "outputsSchema": node_outputs_data, 
@@ -88,9 +93,9 @@ def traverse_node_inputs(node, nodes_to_traverse_next, nodes_cache):
 
     return node_inputs_data
     
-def traverse_nodes(node_group):
-    print("-----------------Parse node group-----------------", node_group.name)
-    nodes = node_group.nodes
+def traverse_nodes(node_tree):
+    print("-----------------Parse node tree-----------------", node_tree.name)
+    nodes = node_tree.nodes
 
     output_node = find_output_node(nodes)
     print("Output node:", output_node)
@@ -103,16 +108,27 @@ def traverse_nodes(node_group):
 
     json_data = {
         "version": 1,
-        "name": node_group.name,
+        "name": node_tree.name,
         "data":[]
     }
+
+    nodes_groups = []
+    try:
+        file = open(bpy.context.scene.cppgen.src_path + "nodesOutput//nodes_meta.json")
+        nodes_meta = json.load(file)
+        nodes_groups = nodes_meta["nodeGroups"]
+    except:
+        print("Failed to load meta file")
+        return
+    finally:
+        file.close()
 
     while not nodes_to_traverse_next.empty():
         node_to_traverse = nodes_to_traverse_next.get_nowait()
         print("Node to traverse:", node_to_traverse)
 
-        json_data["data"].append(traverse_node(node_to_traverse, nodes_to_traverse_next, nodes_cache))
+        json_data["data"].append(traverse_node(node_to_traverse, nodes_to_traverse_next, nodes_cache, nodes_groups))
 
-    output_path = bpy.context.scene.cppgen.src_path + "temp\\{}.json".format(node_group.name)
+    output_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\temp\\{}.json".format(node_tree.name)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, ensure_ascii=False, indent=4)     
