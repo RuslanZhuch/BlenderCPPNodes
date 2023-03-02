@@ -9,11 +9,12 @@ import bpy
 import os
 import sys
 
-from . import nodes_tree, node_sockets, basic_nodes, nodes_generator, nodes_parser, gui
+from . import nodes_meta, nodes_tree, node_sockets, basic_nodes, nodes_generator, nodes_parser, gui
 
 print("reloaded")
 
 _modules = (
+    nodes_meta,
     node_sockets,
     nodes_tree,
     basic_nodes,

@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 
 from . import basic_nodes
+from . import nodes_meta
 
 from bpy.types import NodeTree, Node, NodeSocket, NodeCustomGroup, StringProperty
 
@@ -23,7 +24,7 @@ class NodesFactory():
         self._node_categories_names = {}
         self._block_configs = []
         self._includes = set()
-        self._nodes_meta = {"nodeGroups": dict()}
+        self._nodes_meta = nodes_meta.Generator()
 
     def get_includes(self):
         return self._includes
@@ -31,6 +32,7 @@ class NodesFactory():
     def fetch_configs(self):
         self._block_configs.clear()
         self._includes.clear()
+        self._nodes_meta.reset()
 
         pathlist = Path(bpy.context.scene.cppgen.src_path + "nodes-structures").rglob('*.json')
         for path in pathlist:
@@ -78,7 +80,7 @@ class NodesFactory():
                 self._nodes.append(add_node(arguments, return_data, node_id, node_name))
                 self._node_categories[category_id].append(NodeItem(node_id))
 
-                self._nodes_meta["nodeGroups"][node_name] = category_name
+                self._nodes_meta.register_group(node_name, category_name)
 
 
     def parse_types(self, types_namespace):
@@ -116,7 +118,7 @@ class NodesFactory():
             self._nodes.append(add_node(outputs_data, node_id, node_name))
             self._node_categories[category_id].append(NodeItem(node_id))
             
-            self._nodes_meta["nodeGroups"][node_name] = category_name
+            self._nodes_meta.register_group(node_name, category_name)
 
     def parse_namespace(self, blocks_namespace):
         if blocks_namespace["name"] == "Blocks":
@@ -157,9 +159,13 @@ class NodesFactory():
         self._nodes.append(basic_nodes.InputScriptingNode)
         self._nodes.append(basic_nodes.OutputScriptingNode)
 
+        node_meta_json = {
+            "nodeGroups" : self._nodes_meta.get_node_groups()
+        }
+
         output_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\nodes_meta.json"
         with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(self._nodes_meta, f, ensure_ascii=False, indent=4)     
+            json.dump(node_meta_json, f, ensure_ascii=False, indent=4)     
 
     def register_all(self):
         self.register_nodes()
