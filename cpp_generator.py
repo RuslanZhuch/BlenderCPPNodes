@@ -4,6 +4,8 @@ class Context:
     def __init__(self):
         self.tab_level = 0
 
+def correct_name(input_name):
+    return input_name.replace(".", "_")
 
 def gather_node_data(schema, node_name):
     data = schema["data"]
@@ -40,7 +42,7 @@ def generate_call_args(function_schema):
         if input_data["target_node_name"] == "Input":
             args.append("arg{}".format(input_data["target_socket_id"] + 1))
         else:
-            args.append("{}Result".format(input_data["target_node_name"]))
+            args.append("{}Result".format(correct_name(input_data["target_node_name"])))
     
     args_string = ""
     for arg in args:
@@ -54,7 +56,7 @@ def generate_function_call(function_schema):
     def gen_call_body_str():
         return "{}::{}({})".format(
             function_schema["group"],
-            function_schema["name"],
+            correct_name(function_schema["name"]),
             generate_call_args(function_schema)
         )
 
@@ -62,7 +64,7 @@ def generate_function_call(function_schema):
     output_names = outputs_schema["names"]
     if len(output_names) == 1:
         return "const auto {}Result{{ {} }};".format(
-            function_schema["name"],
+            correct_name(function_schema["name"]),
             gen_call_body_str()
         )
 
@@ -91,7 +93,7 @@ def generate_output_list(schema):
         source_outputs = outputsSchema["names"]
         source_output_id = input_data["target_socket_id"]
         
-        inputs_list.append("{}{}".format(source_node_name, source_outputs[source_output_id]))
+        inputs_list.append("{}{}".format(correct_name(source_node_name), source_outputs[source_output_id]))
     
     return inputs_list
 

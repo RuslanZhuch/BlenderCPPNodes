@@ -1,0 +1,79 @@
+{
+    "version": 1,
+    "name": "schema_6",
+    "data": [
+        {
+            "id": "OutputScriptingNode",
+            "name": "Output",
+            "group": "",
+            "inputs": [
+                {
+                    "target_node_id": "NOTNODE",
+                    "target_node_name": "not.002",
+                    "target_socket_id": 0
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 2
+            },
+            "outputsSchema": {
+                "names": []
+            }
+        },
+        {
+            "id": "NOTNODE",
+            "name": "not.002",
+            "group": "Binary",
+            "inputs": [
+                {
+                    "target_node_id": "InputScriptingNode",
+                    "target_node_name": "not.001",
+                    "target_socket_id": 0
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 1
+            },
+            "outputsSchema": {
+                "names": [
+                    "Result"
+                ]
+            }
+        },
+        {
+            "id": "NOTNODE",
+            "name": "not.001",
+            "group": "Binary",
+            "inputs": [
+                {
+                    "target_node_id": "InputScriptingNode",
+                    "target_node_name": "Input",
+                    "target_socket_id": 0
+                }
+            ],
+            "inputsSchema": {
+                "numOfInputs": 1
+            },
+            "outputsSchema": {
+                "names": [
+                    "Result"
+                ]
+            }
+        },
+        {
+            "id": "InputScriptingNode",
+            "name": "Input",
+            "group": "",
+            "inputs": [],
+            "inputsSchema": {
+                "numOfInputs": 0
+            },
+            "outputsSchema": {
+                "names": [
+                    "Value",
+                    "Value"
+                ]
+            }
+        }
+    ]
+}

@@ -35,6 +35,13 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(cpp_generator.gather_node_data(schema, "Output"), gather_node_data_output(schema))
         schema_file.close()
 
+    def test_name_correction(self):
+        self.assertEqual(cpp_generator.correct_name("name.001"), "name_001")
+        self.assertEqual(cpp_generator.correct_name("name2.002"), "name2_002")
+        self.assertEqual(cpp_generator.correct_name("name3."), "name3_")
+        self.assertEqual(cpp_generator.correct_name(".name"), "_name")
+        self.assertEqual(cpp_generator.correct_name("."), "_")
+
     def test_gen_high_level_signature_1(self):
         schema_file = open("tests\\resources\\nodes_1_schema.json")
         schema = json.load(schema_file)
@@ -89,6 +96,22 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(generated, "const auto [ Vec2x, Vec2y ]{ Types::Vec2(stretchResult) };")
         schema_file.close()
 
+    def test_gen_schema6_not_001_call(self):
+        schema_file = open("tests\\resources\\nodes_6_schema.json")
+        schema = json.load(schema_file)
+        function_schema = cpp_generator.gather_node_data(schema, "not.001")
+        generated = cpp_generator.generate_function_call(function_schema)
+        self.assertEqual(generated, "const auto not_001Result{ Binary::not_001(arg1) };")
+        schema_file.close()
+
+    def test_gen_schema6_not_002_call(self):
+        schema_file = open("tests\\resources\\nodes_6_schema.json")
+        schema = json.load(schema_file)
+        function_schema = cpp_generator.gather_node_data(schema, "not.002")
+        generated = cpp_generator.generate_function_call(function_schema)
+        self.assertEqual(generated, "const auto not_002Result{ Binary::not_002(not_001Result) };")
+        schema_file.close()
+
     def test_gen_output_list_schema1(self):
         schema_file = open("tests\\resources\\nodes_1_schema.json")
         schema = json.load(schema_file)
@@ -108,6 +131,13 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         generated = cpp_generator.generate_output_list(schema)
         self.assertEqual(generated, ["Vec2x", "Vec2y"])
+        schema_file.close()
+        
+    def test_gen_output_list_schema6(self):
+        schema_file = open("tests\\resources\\nodes_6_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate_output_list(schema)
+        self.assertEqual(generated, ["not_002Result"])
         schema_file.close()
 
     def test_gen_return(self):
@@ -184,6 +214,15 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
         expected_file = open("tests\\resources\\nodes_5_generated.cpp", 'r')
+        self.assertEqual(generated, expected_file.read())
+        expected_file.close()
+        schema_file.close()
+        
+    def test_gen_schema6(self):
+        schema_file = open("tests\\resources\\nodes_6_schema.json")
+        schema = json.load(schema_file)
+        generated = cpp_generator.generate(schema)
+        expected_file = open("tests\\resources\\nodes_6_generated.cpp", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
