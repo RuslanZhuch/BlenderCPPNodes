@@ -141,11 +141,12 @@ class TestCppGenerator(unittest.TestCase):
         schema_file.close()
 
     def test_gen_return(self):
-        generated1 = cpp_generator.generate_return_from_list(["notResult"])
-        self.assertEqual(generated1, "return { notResult };")
+        ctx = cpp_generator.Context()
+        generated1 = cpp_generator.generate_return_from_list(["notResult"], ctx)
+        self.assertEqual(generated1, "struct OutS\n{\n    decltype(notResult) out1;\n};\nreturn OutS(notResult);\n")
 
-        generated2 = cpp_generator.generate_return_from_list(["andResult", "orResult"])
-        self.assertEqual(generated2, "return { andResult, orResult };")
+        generated2 = cpp_generator.generate_return_from_list(["andResult", "orResult"], ctx)
+        self.assertEqual(generated2, "struct OutS\n{\n    decltype(andResult) out1;\n    decltype(orResult) out2;\n};\nreturn OutS(andResult, orResult);\n")
 
     def test_gen_tabulation(self):
         self.assertEqual(cpp_generator.tabulate("some string", 0), "some string")
@@ -164,7 +165,11 @@ class TestCppGenerator(unittest.TestCase):
         self.assertEqual(cpp_generator.put_line("Line 4", ctx), "    Line 4\n") 
         self.assertEqual(cpp_generator.pull_scope(ctx), "}\n")
         self.assertEqual(cpp_generator.put_line("Line 5", ctx), "Line 5\n")
-        self.assertEqual(cpp_generator.put_line("Line 6", ctx), "Line 6\n") 
+        self.assertEqual(cpp_generator.put_line("Line 6", ctx), "Line 6\n")
+        self.assertEqual(cpp_generator.push_scope(ctx), "{\n")
+        self.assertEqual(cpp_generator.put_line("Line 7", ctx), "    Line 7\n")
+        self.assertEqual(cpp_generator.pull_scope(ctx, semi=True), "};\n")
+        self.assertEqual(cpp_generator.put_line("Line 8", ctx), "Line 8\n")
 
     def test_gen_scope_nested(self):
         ctx = cpp_generator.Context()

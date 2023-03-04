@@ -97,14 +97,23 @@ def generate_output_list(schema):
     
     return inputs_list
 
-def generate_return_from_list(inputs_list):
+def generate_return_from_list(inputs_list, context):
+    output = put_line("struct OutS", context)
+    output += push_scope(context)
+
+    for idx, input_name in enumerate(inputs_list):
+        output += put_line("decltype({}) out{};".format(input_name, idx + 1), context)
+
+    output += pull_scope(context, semi=True)
+
     output_names = ""
     for input_name in inputs_list:
         if input_name != inputs_list[0]:
             output_names += ", "
         output_names += input_name
 
-    return "return {{ {} }};".format(output_names)
+    output += put_line("return OutS({});".format(output_names), context)
+    return output
 
 def tabulate(input_string, level = 1):
     tabs_str = ""
@@ -120,8 +129,10 @@ def push_scope(context):
     context.tab_level += 1
     return output_str
 
-def pull_scope(context):
+def pull_scope(context, semi=False):
     context.tab_level -= 1
+    if semi:
+        return tabulate("};\n", context.tab_level)
     return tabulate("}\n", context.tab_level)
 
 def generate_includes(includes_list):
@@ -151,7 +162,8 @@ def generate(schema):
             call_str = generate_function_call(node_data)
             file_data += put_line(call_str, context)
 
-    file_data += put_line(generate_return_from_list(generate_output_list(schema)), context)
+    file_data += "\n"
+    file_data += generate_return_from_list(generate_output_list(schema), context)
 
     file_data += pull_scope(context)
     return file_data

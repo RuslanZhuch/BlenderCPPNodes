@@ -32,11 +32,19 @@ def traverse_node(node, nodes_to_traverse_next, nodes_cache, node_groups):
     return node_data
 
 def gather_node_schema(node):
-    def gather_output_names(node):
-        return [output.name.split(' ')[0] for output in node.outputs]     
-    
+    def gather_output_data(node):
+        splitted_list = [output.name.split(' ') for output in node.outputs]
+        splitted_names = [splitted[0] for splitted in splitted_list]
+
+        splitted_types_raw = [splitted[1] if len(splitted) > 1 else "" for splitted in splitted_list]
+        splitted_types = [type_raw[1:-1] if len(type_raw) > 2 else "" for type_raw in splitted_types_raw]
+
+        return splitted_names, splitted_types
+     
+    output_names, output_types = gather_output_data(node)
     node_outputs_data = {
-        "names": gather_output_names(node)
+        "names": output_names,
+        "types": output_types
     }
 
     node_inputs_data = {
