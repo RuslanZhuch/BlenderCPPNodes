@@ -1,4 +1,6 @@
 import json
+import sys
+import os
 
 class Context:
     def __init__(self):
@@ -149,7 +151,8 @@ def generate_includes(includes_list):
 def generate(schema):
     context = Context()
 
-    file_data = put_line("#include \"generationIncludes.h\"", context)
+    file_data = put_line("#pragma once", context)
+    file_data += put_line("#include \"generationIncludes.h\"", context)
     file_data += put_line("", context)
 
     file_data += put_line(generate_signature(schema), context)
@@ -167,3 +170,17 @@ def generate(schema):
 
     file_data += pull_scope(context)
     return file_data
+
+def generate_cpp(schema_file_path, output_path):
+    schema_file = open(schema_file_path, 'r')
+    schema = json.load(schema_file)
+
+    generated = generate(schema)
+
+    output_filename = os.path.basename(schema_file_path).split(".")[0]
+
+    generated_file = open(output_path + "\\" + output_filename + ".h", "w")
+    generated_file.write(generated)
+    generated_file.close()  
+
+    return True

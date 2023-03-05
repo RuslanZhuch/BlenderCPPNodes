@@ -191,7 +191,7 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_1_schema.json")
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
-        expected_file = open("tests\\resources\\nodes_1_generated.cpp", 'r')
+        expected_file = open("tests\\resources\\nodes_1_generated.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
@@ -200,7 +200,7 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_3_schema.json")
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
-        expected_file = open("tests\\resources\\nodes_3_generated.cpp", 'r')
+        expected_file = open("tests\\resources\\nodes_3_generated.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
@@ -209,7 +209,7 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_4_schema.json")
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
-        expected_file = open("tests\\resources\\nodes_4_generated.cpp", 'r')
+        expected_file = open("tests\\resources\\nodes_4_generated.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
@@ -218,7 +218,7 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_5_schema.json")
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
-        expected_file = open("tests\\resources\\nodes_5_generated.cpp", 'r')
+        expected_file = open("tests\\resources\\nodes_5_generated.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
@@ -227,11 +227,33 @@ class TestCppGenerator(unittest.TestCase):
         schema_file = open("tests\\resources\\nodes_6_schema.json")
         schema = json.load(schema_file)
         generated = cpp_generator.generate(schema)
-        expected_file = open("tests\\resources\\nodes_6_generated.cpp", 'r')
+        expected_file = open("tests\\resources\\nodes_6_generated.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
         schema_file.close()
+
+    def test_gen_cpp_from_schema_1(self):
+        generated_result = cpp_generator.generate_cpp("tests\\resources\\nodes_1_schema.json", "tests\\resources\\generated")
+        self.assertTrue(generated_result)
+        expected_file = open("tests\\resources\\nodes_1_generated.h", 'r')
+        generated_file = open("tests\\resources\\generated\\nodes_1_schema.h", 'r')
         
+        self.assertEqual(expected_file.read(), generated_file.read())
+
+        expected_file.close()
+        generated_file.close()
+
+    def test_gen_cpp_from_schema_3(self):
+        generated_result = cpp_generator.generate_cpp("tests\\resources\\nodes_3_schema.json", "tests\\resources\\generated")
+        self.assertTrue(generated_result)
+        expected_file = open("tests\\resources\\nodes_3_generated.h", 'r')
+        generated_file = open("tests\\resources\\generated\\nodes_3_schema.h", 'r')
+        
+        self.assertEqual(expected_file.read(), generated_file.read())
+
+        expected_file.close()
+        generated_file.close()
+
     def test_gen_includes_content(self):
         generated = cpp_generator.generate_includes([
             "include_1.h", 
