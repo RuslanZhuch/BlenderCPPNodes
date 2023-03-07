@@ -1,3 +1,4 @@
+#pragma once
 #include "generationIncludes.h"
 
 auto schema_5(auto&& arg1)
