@@ -28,7 +28,7 @@
         {
             "id": "ANDNODE",
             "name": "and",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
@@ -53,7 +53,7 @@
         {
             "id": "ANDNODE",
             "name": "or",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
             ],
             "inputsSchema": {

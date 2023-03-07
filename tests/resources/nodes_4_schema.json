@@ -28,7 +28,7 @@
         {
             "id": "ANDNODE",
             "name": "and",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "NOTNODE",
@@ -53,7 +53,7 @@
         {
             "id": "ORNODE",
             "name": "or",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
@@ -73,7 +73,7 @@
         {
             "id": "NOTNODE",
             "name": "not",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "XORNODE",
@@ -108,7 +108,7 @@
         {
             "id": "XORNODE",
             "name": "xor",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",

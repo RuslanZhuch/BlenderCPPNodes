@@ -49,7 +49,7 @@
         {
             "id": "STRETCHNODE",
             "name": "stretch",
-            "group": "MultiOutput",
+            "group": "Blocks::MultiOutput",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",

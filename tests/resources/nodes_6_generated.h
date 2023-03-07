@@ -3,8 +3,8 @@
 
 auto schema_6(auto&& arg1)
 {
-    const auto not_001Result{ Binary::not_001(arg1) };
-    const auto not_002Result{ Binary::not_002(not_001Result) };
+    const auto not_001Result{ Blocks::Binary::not_001(arg1) };
+    const auto not_002Result{ Blocks::Binary::not_002(not_001Result) };
 
     struct OutS
     {

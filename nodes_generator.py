@@ -44,44 +44,45 @@ class NodesFactory():
                 print("Failed to load config from file", path_in_str)
 
     def parse_blocks(self, blocks_namespace):
-        for block_category in blocks_namespace["members"]:
-            category_name = block_category["name"]
+        def add_node(arguments, return_data, node_id, node_name):
+            def init(self, context):
+                for argument in arguments:
+                    input_data = argument["type"]
+                    input_type = input_data["name"]
+                    self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + " (" + input_type + ")")
+                return_type = return_data["name"]
+                self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
+
+            node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
+                "bl_idname": node_id,
+                "bl_label": node_name,
+                
+                "init": init
+            })
+
+            return node_class
+
+        for node_data in blocks_namespace["members"]:
+
+            node_meta = node_data["meta"]
+
+            category_name = node_meta["group"]
             category_id = str.upper(category_name) + "NODES"
 
             if self._node_categories.get(category_id) is None:
                 self._node_categories[category_id] = []
             self._node_categories_names[category_id] = category_name
 
-            def add_node(arguments, return_data, node_id, node_name):
-                def init(self, context):
-                    for argument in arguments:
-                        input_data = argument["type"]
-                        input_type = input_data["name"]
-                        self.inputs.new(basic_nodes.TypesMapper.type_to_socket(input_type), argument["name"] + " (" + input_type + ")")
-                    return_type = return_data["name"]
-                    self.outputs.new(basic_nodes.TypesMapper.type_to_socket(return_type), "Result (" + return_type + ")")
+            node_name = node_data["name"]
+            node_id = str.upper(node_name) + "NODE"
 
-                node_class = type("ScriptingTreeNode" + node_id, (basic_nodes.ScriptingTreeNodeBase, Node, ), {
-                    "bl_idname": node_id,
-                    "bl_label": node_name,
-                    
-                    "init": init
-                })
+            return_data = node_data["returnType"]
+            arguments = node_data["arguments"]
 
-                return node_class
+            self._nodes.append(add_node(arguments, return_data, node_id, node_name))
+            self._node_categories[category_id].append(NodeItem(node_id))
 
-            for node_data in block_category["members"]:
-                node_name = node_data["name"]
-                node_id = str.upper(node_name) + "NODE"
-
-                return_data = node_data["returnType"]
-                arguments = node_data["arguments"]
-
-                self._nodes.append(add_node(arguments, return_data, node_id, node_name))
-                self._node_categories[category_id].append(NodeItem(node_id))
-
-                self._nodes_meta.register_group(node_name, category_name)
-
+            self._nodes_meta.register_group(node_name, "Blocks::" + category_name)
 
     def parse_types(self, types_namespace):
         category_name = "Types"

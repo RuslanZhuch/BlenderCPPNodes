@@ -77,7 +77,7 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         function_schema = cpp_generator.gather_node_data(schema, "not")
         generated = cpp_generator.generate_function_call(function_schema)
-        self.assertEqual(generated, "const auto notResult{ Binary::not(arg1) };")
+        self.assertEqual(generated, "const auto notResult{ Blocks::Binary::not(arg1) };")
         schema_file.close()
 
     def test_gen_schema5_stretch_function_call(self):
@@ -85,7 +85,7 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         function_schema = cpp_generator.gather_node_data(schema, "stretch")
         generated = cpp_generator.generate_function_call(function_schema)
-        self.assertEqual(generated, "const auto stretchResult{ MultiOutput::stretch(arg1) };")
+        self.assertEqual(generated, "const auto stretchResult{ Blocks::MultiOutput::stretch(arg1) };")
         schema_file.close()
 
     def test_gen_schema5_Vec2_call(self):
@@ -101,7 +101,7 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         function_schema = cpp_generator.gather_node_data(schema, "not.001")
         generated = cpp_generator.generate_function_call(function_schema)
-        self.assertEqual(generated, "const auto not_001Result{ Binary::not_001(arg1) };")
+        self.assertEqual(generated, "const auto not_001Result{ Blocks::Binary::not_001(arg1) };")
         schema_file.close()
 
     def test_gen_schema6_not_002_call(self):
@@ -109,7 +109,7 @@ class TestCppGenerator(unittest.TestCase):
         schema = json.load(schema_file)
         function_schema = cpp_generator.gather_node_data(schema, "not.002")
         generated = cpp_generator.generate_function_call(function_schema)
-        self.assertEqual(generated, "const auto not_002Result{ Binary::not_002(not_001Result) };")
+        self.assertEqual(generated, "const auto not_002Result{ Blocks::Binary::not_002(not_001Result) };")
         schema_file.close()
 
     def test_gen_output_list_schema1(self):

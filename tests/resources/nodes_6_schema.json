@@ -23,7 +23,7 @@
         {
             "id": "NOTNODE",
             "name": "not.002",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
@@ -43,7 +43,7 @@
         {
             "id": "NOTNODE",
             "name": "not.001",
-            "group": "Binary",
+            "group": "Blocks::Binary",
             "inputs": [
                 {
                     "target_node_id": "InputScriptingNode",
