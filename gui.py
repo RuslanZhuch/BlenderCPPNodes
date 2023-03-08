@@ -59,6 +59,9 @@ class CPPGEN_OT_ParseNodes(bpy.types.Operator):
                 continue
             nodes_parser.traverse_nodes(node_group)
         print("--------------- PARSING COMPLETE ---------------")
+        print("------------- GENERATING C++ CODE --------------")
+        nodes_parser.generate_meta_files()
+        print("------------- GENERATING COMPLETE --------------")
         return {'FINISHED'}
 
 _classes = (

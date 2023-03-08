@@ -23,15 +23,13 @@ class NodesFactory():
         self._node_categories = {}
         self._node_categories_names = {}
         self._block_configs = []
-        self._includes = set()
         self._nodes_meta = nodes_meta.Generator()
 
-    def get_includes(self):
-        return self._includes
+    def get_nodes_meta(self):
+        return self._nodes_meta
 
     def fetch_configs(self):
         self._block_configs.clear()
-        self._includes.clear()
         self._nodes_meta.reset()
 
         pathlist = Path(bpy.context.scene.cppgen.src_path + "nodes-structures").rglob('*.json')
@@ -129,7 +127,7 @@ class NodesFactory():
 
     def parse_include(self, block_include):
         include_path = block_include["file"]
-        self._includes.add(include_path)
+        self._nodes_meta.register_include(include_path)
 
     def parse_config(self, block_config):
         if len(block_config) == 0:

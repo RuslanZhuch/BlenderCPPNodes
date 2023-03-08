@@ -14,7 +14,7 @@ import nodes_meta
 
 class TestMetaGeneration(unittest.TestCase):
 
-    def test_generate_meta_data(self):
+    def test_generate_meta_data_groups(self):
         meta_gen = nodes_meta.Generator()
         meta_gen.register_group("node1", "group1")
         meta_gen.register_group("node2", "group2")
@@ -42,3 +42,35 @@ class TestMetaGeneration(unittest.TestCase):
             "node5": "group12"
         }
         self.assertEqual(node_groups_3, expected_node_groups_2)
+        
+    def test_generate_meta_data_includes(self):
+        meta_gen = nodes_meta.Generator()
+        meta_gen.register_include("include_1.h")
+        meta_gen.register_include("include_2.h")
+        meta_gen.register_include("include_3.h")
+        
+        includes_1 = meta_gen.get_includes()
+        expected_includes_1 = [
+            "include_1.h",
+            "include_2.h",
+            "include_3.h",
+        ]
+
+        includes_1.sort()
+        self.assertEqual(includes_1, expected_includes_1)
+
+        meta_gen.reset()
+        includes_2 = meta_gen.get_includes()
+        self.assertEqual(includes_2, [])
+        
+        meta_gen.register_include("include_4.h")
+        meta_gen.register_include("include_5.h")
+        meta_gen.register_include("include_4.h")
+        includes_3 = meta_gen.get_includes()
+
+        expected_includes_3 = [
+            "include_4.h",
+            "include_5.h",
+        ]
+        includes_3.sort()
+        self.assertEqual(includes_3, expected_includes_3)

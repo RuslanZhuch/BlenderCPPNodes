@@ -148,6 +148,13 @@ def generate_includes(includes_list):
 
     return file_data
 
+def generate_includes_file(includes_list, output_path):
+    output_filename = output_path + "\\generationIncludes.h"
+
+    generated_file = open(output_filename, "w")
+    generated_file.write(generate_includes(includes_list))
+    generated_file.close()
+
 def generate(schema):
     context = Context()
 

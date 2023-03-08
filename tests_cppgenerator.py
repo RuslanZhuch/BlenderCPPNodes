@@ -11,6 +11,7 @@ root_dir = Path.cwd()
 sys.path.append(root_dir)
 
 import cpp_generator
+import nodes_meta
 
 def gather_node_data_input(schema_data):
     data = schema_data["data"]
@@ -265,3 +266,19 @@ class TestCppGenerator(unittest.TestCase):
         expected_file = open("tests\\resources\\expected_includes.h", 'r')
         self.assertEqual(generated, expected_file.read())
         expected_file.close()
+
+    def test_gen_includes_file(self):
+        cpp_generator.generate_includes_file([
+            "include_1.h", 
+            "include_2.h", 
+            "include_3.h", 
+            "include_4.h", 
+            "include_5.h", 
+            ], "tests\\resources\\generated")
+        expected_file = open("tests\\resources\\expected_includes.h", 'r')
+        generated_file = open("tests\\resources\\generated\\generationIncludes.h", 'r')
+        
+        self.assertEqual(expected_file.read(), generated_file.read())
+
+        expected_file.close()
+        generated_file.close()

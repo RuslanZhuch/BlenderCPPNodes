@@ -2,6 +2,15 @@ import bpy
 import json
 
 import queue
+import threading
+from . import cpp_generator 
+from . import nodes_generator
+
+
+def cpp_generator_thread(meta_path):
+    output_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\generated"
+    cpp_generator.generate_cpp(meta_path, output_path)     
+    print("Generated cpp code for", meta_path)  
 
 def find_output_node(nodes):
     for node in nodes:
@@ -137,6 +146,16 @@ def traverse_nodes(node_tree):
 
         json_data["data"].append(traverse_node(node_to_traverse, nodes_to_traverse_next, nodes_cache, nodes_groups))
 
-    output_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\temp\\{}.json".format(node_tree.name)
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(json_data, f, ensure_ascii=False, indent=4)     
+    code_meta_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\temp\\{}.json".format(node_tree.name)
+    with open(code_meta_path, 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)  
+                
+    generator_thread = threading.Thread(target=cpp_generator_thread, args=(code_meta_path,))
+    generator_thread.daemon = True
+    generator_thread.start()
+        
+def generate_meta_files():
+    factory = nodes_generator.nodes_factory.get_nodes_meta()
+    output_path = bpy.context.scene.cppgen.src_path + "nodesOutput\\generated"
+    cpp_generator.generate_includes_file(factory.get_includes(), output_path)
+    
