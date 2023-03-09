@@ -35,6 +35,7 @@ class NodesFactory():
         pathlist = Path(bpy.context.scene.cppgen.src_path + "nodes-structures").rglob('*.json')
         for path in pathlist:
             path_in_str = str(path)
+            self._nodes_meta.register_include(path.stem + ".h")
             try:
                 file = open(path_in_str)
                 self._block_configs.append(json.load(file))
@@ -125,10 +126,6 @@ class NodesFactory():
         elif blocks_namespace["name"] == "Types":
             self.parse_types(blocks_namespace)
 
-    def parse_include(self, block_include):
-        include_path = block_include["file"]
-        self._nodes_meta.register_include(include_path)
-
     def parse_config(self, block_config):
         if len(block_config) == 0:
             return
@@ -136,8 +133,6 @@ class NodesFactory():
         for block in block_config:
             if block["type"] == "namespace":
                 self.parse_namespace(block)
-            elif block["type"] == "include":
-                self.parse_include(block)
 
     def register_nodes(self):
         parser_path = bpy.context.scene.cppgen.src_path + "header-parser.exe"
