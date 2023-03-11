@@ -60,28 +60,29 @@ class NodesFactory():
             })
 
             return node_class
-
-        for node_data in blocks_namespace["members"]:
-
-            node_meta = node_data["meta"]
-
-            category_name = node_meta["group"]
+        
+        for block_group in blocks_namespace["members"]:
+            block_group_type = block_group["type"]
+            if block_group_type != "namespace":
+                continue
+            
+            category_name = block_group["name"]
             category_id = str.upper(category_name) + "NODES"
-
             if self._node_categories.get(category_id) is None:
                 self._node_categories[category_id] = []
             self._node_categories_names[category_id] = category_name
+        
+            for node_data in block_group["members"]:
+                node_name = node_data["name"]
+                node_id = str.upper(node_name) + "NODE"
 
-            node_name = node_data["name"]
-            node_id = str.upper(node_name) + "NODE"
+                return_data = node_data["returnType"]
+                arguments = node_data["arguments"]
 
-            return_data = node_data["returnType"]
-            arguments = node_data["arguments"]
+                self._nodes.append(add_node(arguments, return_data, node_id, node_name))
+                self._node_categories[category_id].append(NodeItem(node_id))
 
-            self._nodes.append(add_node(arguments, return_data, node_id, node_name))
-            self._node_categories[category_id].append(NodeItem(node_id))
-
-            self._nodes_meta.register_group(node_name, "Blocks::" + category_name)
+                self._nodes_meta.register_group(node_name, "Blocks::" + category_name)
 
     def parse_types(self, types_namespace):
         category_name = "Types"
