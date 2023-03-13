@@ -1,7 +1,7 @@
 # BlenderCPPNodes
 Custom Blender nodes tree for C++ code generation.
 
-![Nodes header example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/TemplateHeader.jpg?raw=true)
+![Nodes header example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/TemplateHeader.JPG?raw=true)
 
 ## Features
 - generate custom nodes from user provided json files
@@ -80,7 +80,7 @@ Now you must be able to create three nodes:
 - Input and Output nodes in I/O groupt;
 - sigma node in Math group.
 
-![Three nodes example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/Sample1Nodes.jpg?raw=true)
+![Three nodes example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/Sample1Nodes.JPG?raw=true)
 
 Create the node tree shown above and press "Parse nodes" button. 
 This process will generate two files in your "nodesOutput" folder:
@@ -149,7 +149,7 @@ A User-defined type must be refferenced as shown below.
 },
 ```
 
-![Type nodes example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/Sample1Nodes.jpg?raw=true)
+![Type nodes example](https://github.com/RuslanZhuch/BlenderCPPNodes/blob/main/repoMedia/Sample2Nodes.JPG?raw=true)
 
 ### Pre-release version
 This is a pre-release version of the library. 
